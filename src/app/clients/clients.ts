@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, JsonPipe} from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ClientsSerivces } from '../services/clients-serivces';
 import {FormBuilder, FormGroup } from "@angular/forms";
@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,ReactiveFormsModule],
+  imports: [CommonModule, HttpClientModule, ReactiveFormsModule, JsonPipe, JsonPipe],
   templateUrl: './clients.html',
   styleUrls: ['./clients.css']
 })
@@ -23,7 +23,13 @@ export class Clients implements OnInit {
       { motcle :this.fb.control("")}
 
     )
-    this.clientservice.getclients().subscribe({
+this.handleSearchClients();
+  }
+
+  protected handleSearchClients() {
+
+let kw=this.searchformGroup?.value.motcle;
+    this.clientservice.searchclients(kw).subscribe({
       next: (data) => {
         this.clients = data;
       },
@@ -31,10 +37,5 @@ export class Clients implements OnInit {
         console.error(err);
       }
     });
-  }
-
-  protected handleSearchClients() {
-
-
   }
 }

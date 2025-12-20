@@ -5,7 +5,6 @@
     </div>
     <div class="card-body">
       <div *ngIf="searchformGroup">
-        {{ searchformGroup.value |json }}
         <form [formGroup]="searchformGroup" (ngSubmit)="handleSearchClients()">
           <div class="input-group mb-2">
             <label class="me-2">Keyword :</label>
