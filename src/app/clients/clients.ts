@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, ReactiveFormsModule, JsonPipe, JsonPipe],
+  imports: [CommonModule, HttpClientModule, ReactiveFormsModule ],
   templateUrl: './clients.html',
   styleUrls: ['./clients.css']
 })
