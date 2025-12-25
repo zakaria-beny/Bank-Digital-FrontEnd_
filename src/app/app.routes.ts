@@ -5,9 +5,10 @@ import { NoveauClient } from './noveau-client/noveau-client';
 import { EditClient } from './edit-client/edit-client';
 import { ClientDetails } from './client-details/client-details';
 import { NouveauCompte } from './nouveau-compte/nouveau-compte';
-import { EditCompte } from './edit-compte/edit-compte';
 import { CompteDetails } from './compte-details/compte-details';
 import { ClientComptes } from './client-comptes/client-comptes';
+import { EditCompte } from './edit-compte/edit-compte';
+import { Operations } from './operations/operations';
 
 export const routes: Routes = [
   { path: 'clients', component: Clients },
@@ -19,5 +20,6 @@ export const routes: Routes = [
   { path: 'nouveau-compte', component: NouveauCompte },
   { path: 'edit-compte/:id', component: EditCompte },
   { path: 'compte-details/:id', component: CompteDetails },
-  { path: '', redirectTo: 'clients', pathMatch: 'full' }
+  { path: 'operations/:id', component: Operations },
+  { path: '', redirectTo: 'clients', pathMatch: 'full' },
 ];

@@ -1,72 +1,71 @@
-<div class="container mt-2">
-  <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <span>Comptes Bancaires</span>
-      <button class="btn btn-primary btn-sm" (click)="handleNewCompte()">
-        <i class="bi bi-plus-circle me-1"></i>
-        Nouveau Compte
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+      <h4 class="mb-0 text-primary">Comptes Bancaires</h4>
+      <button class="btn btn-primary" (click)="handleNewCompte()">
+        <i class="bi bi-plus-lg me-2"></i>Nouveau Compte
       </button>
     </div>
 
     <div class="card-body">
-      <div *ngIf="searchformGroup">
-        <form [formGroup]="searchformGroup" (ngSubmit)="handleSearchComptes()">
-          <div class="input-group mb-3">
-            <label class="me-2">Rechercher :</label>
-            <input type="text" formControlName="motcle" class="form-control"
-                   placeholder="Nom du client...">
-            <button class="btn btn-info ms-2" type="submit">
-              <i class="bi bi-search me-1"></i>
-              Rechercher
-            </button>
-          </div>
-        </form>
+      <form [formGroup]="searchformGroup" (ngSubmit)="handleSearchComptes()">
+        <div class="input-group mb-4">
+          <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+          <input type="text" formControlName="motcle" class="form-control"
+                 placeholder="Rechercher par ID ou nom du client...">
+          <button class="btn btn-info text-white" type="submit">Rechercher</button>
+        </div>
+      </form>
+
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        <i class="bi bi-exclamation-octagon me-2"></i> {{ errorMessage }}
       </div>
 
-      <div *ngIf="loading" class="text-center my-4">
+      <div *ngIf="loading" class="text-center my-5">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Chargement...</span>
         </div>
+        <p class="mt-2 text-muted">Récupération des données...</p>
       </div>
 
       <div *ngIf="!loading && comptes.length > 0">
-        <table class="table table-bordered table-striped">
-          <thead>
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
           <tr>
             <th>ID</th>
-            <th>Numéro de Compte</th>
-            <th>Type</th>
-            <th>Solde</th>
+            <th>Numéro</th>
             <th>Client</th>
-            <th>Date de Création</th>
-            <th>Actions</th>
+            <th>Type</th>
+            <th class="text-end">Solde</th>
+            <th>Date</th>
+            <th class="text-center">Actions</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let compte of comptes">
-            <td>{{compte.id}}</td>
-            <td>{{compte.numeroCompte || 'N/A'}}</td>
-            <td>
-              <span class="badge"
-                    [ngClass]="compte.type?.includes('Courant') ? 'bg-primary' : 'bg-success'">
-                {{compte.type}}
-              </span>
+          <tr *ngFor="let c of comptes">
+            <td>{{ c.id }}</td>
+            <td class="text-muted small">{{ c.numeroCompte }}</td>
+
+            <td class="fw-bold text-primary">
+              {{ c.clientdto?.nom || c.client?.nom || 'Inconnu' }}
             </td>
-            <td class="fw-bold">{{compte.solde | number:'1.2-2'}} MAD</td>
-            <td>{{compte.clientdto?.nom || 'N/A'}}</td>
-            <td>{{compte.dateCreation | date:'dd/MM/yyyy'}}</td>
+
             <td>
-              <button class="btn btn-info btn-sm me-2" (click)="handleViewDetails(compte)">
-                <i class="bi bi-eye me-1"></i>
-                Détails
+                <span class="badge rounded-pill"
+                      [ngClass]="(c.type?.toUpperCase().includes('COURANT')) ? 'bg-info text-dark' : 'bg-success'">
+                  {{ c.type }}
+                </span>
+            </td>
+
+            <td class="text-end fw-bold">{{ c.solde | number:'1.2-2' }} {{ c.devise }}</td>
+            <td>{{ c.dateCreation | date:'dd/MM/yyyy' }}</td>
+
+            <td class="text-center">
+              <button class="btn btn-outline-info btn-sm me-1" (click)="handleViewDetails(c)" title="Détails">
+            detail
               </button>
-              <button class="btn btn-warning btn-sm me-2" (click)="handleEditCompte(compte)">
-                <i class="bi bi-pencil-square me-1"></i>
-                Modifier
-              </button>
-              <button class="btn btn-danger btn-sm" (click)="handleDeleteCompte(compte)">
-                <i class="bi bi-trash me-1"></i>
-                Supprimer
+              <button class="btn btn-outline-danger btn-sm" (click)="handleDeleteCompte(c)" title="Supprimer">
+                supp
               </button>
             </td>
           </tr>
@@ -74,10 +73,6 @@
         </table>
       </div>
 
-      <div *ngIf="!loading && comptes.length === 0" class="alert alert-warning text-center">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        Aucun compte trouvé
-      </div>
     </div>
   </div>
 </div>
