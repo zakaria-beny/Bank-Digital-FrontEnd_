@@ -35,4 +35,5 @@ export class ClientsSerivces {
   public getcomptesbyClient(clientId: number): Observable<any> {
     return this.http.get("http://localhost:8080/clients/" + clientId + "/comptes");
   }
+
 }

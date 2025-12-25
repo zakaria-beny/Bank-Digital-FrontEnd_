@@ -9,8 +9,10 @@ import { CompteDetails } from './compte-details/compte-details';
 import { ClientComptes } from './client-comptes/client-comptes';
 import { EditCompte } from './edit-compte/edit-compte';
 import { Operations } from './operations/operations';
+import { Dashboard } from './dashboard/dashboard';
 
 export const routes: Routes = [
+  { path: 'dashboard', component: Dashboard },
   { path: 'clients', component: Clients },
   { path: 'comptes', component: Comptes },
   { path: 'noveau-client', component: NoveauClient },
@@ -21,5 +23,5 @@ export const routes: Routes = [
   { path: 'edit-compte/:id', component: EditCompte },
   { path: 'compte-details/:id', component: CompteDetails },
   { path: 'operations/:id', component: Operations },
-  { path: '', redirectTo: 'clients', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
