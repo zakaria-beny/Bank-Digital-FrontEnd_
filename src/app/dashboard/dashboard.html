@@ -1,0 +1,175 @@
+<div class="container-fluid mt-4">
+  <div class="mb-4">
+    <h2 class="mb-0">
+      <i class="bi bi-speedometer2 me-2"></i>
+      Tableau de Bord
+    </h2>
+  </div>
+
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2 text-muted">Chargement des statistiques...</p>
+  </div>
+
+  <div *ngIf="!loading && stats">
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Total Clients</h6>
+                <h2 class="mb-0 fw-bold">{{stats.totalClients}}</h2>
+              </div>
+              <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-people fs-2 text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Total Comptes</h6>
+                <h2 class="mb-0 fw-bold">{{stats.totalComptes}}</h2>
+              </div>
+              <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-wallet2 fs-2 text-success"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Solde Total</h6>
+                <h2 class="mb-0 fw-bold">{{stats.totalBalance | number:'1.2-2'}}</h2>
+                <small class="text-muted">MAD</small>
+              </div>
+              <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-cash-stack fs-2 text-info"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Total Opérations</h6>
+                <h2 class="mb-0 fw-bold">{{stats.totalOperations}}</h2>
+              </div>
+              <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-arrow-left-right fs-2 text-warning"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0">
+              <i class="bi bi-pie-chart me-2"></i>
+              Répartition des Types de Comptes
+            </h5>
+          </div>
+          <div class="card-body">
+            <div style="display: block; height: 400px;">
+              <canvas baseChart
+                      [data]="pieChartData"
+                      [type]="'pie'"
+                      [options]="chartOptions">
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="text-muted mb-3">
+              <i class="bi bi-info-circle me-2"></i>
+              Détails des Comptes
+            </h6>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span><i class="bi bi-wallet text-primary me-2"></i>Comptes Courants</span>
+                <strong class="text-primary">{{stats.compteCourantCount}}</strong>
+              </div>
+              <div class="progress mb-3" style="height: 10px;">
+                <div class="progress-bar bg-primary"
+                     [style.width.%]="stats.totalComptes > 0 ? (stats.compteCourantCount / stats.totalComptes) * 100 : 0">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span><i class="bi bi-piggy-bank text-success me-2"></i>Comptes Épargne</span>
+                <strong class="text-success">{{stats.compteEpargneCount}}</strong>
+              </div>
+              <div class="progress" style="height: 10px;">
+                <div class="progress-bar bg-success"
+                     [style.width.%]="stats.totalComptes > 0 ? (stats.compteEpargneCount / stats.totalComptes) * 100 : 0">
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="mb-4">
+              <h6 class="text-muted mb-3">Statut des Comptes</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span><i class="bi bi-check-circle text-success me-1"></i> Actifs</span>
+                <strong class="text-success">{{stats.activeAccounts}}</strong>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span><i class="bi bi-pause-circle text-danger me-1"></i> Suspendus</span>
+                <strong class="text-danger">{{stats.suspendedAccounts}}</strong>
+              </div>
+            </div>
+
+            <hr>
+
+            <h6 class="text-muted mb-3">Actions Rapides</h6>
+            <div class="d-grid gap-2">
+              <a routerLink="/noveau-client" class="btn btn-primary btn-sm">
+                <i class="bi bi-person-plus me-1"></i>
+                Nouveau Client
+              </a>
+              <a routerLink="/nouveau-compte" class="btn btn-success btn-sm">
+                <i class="bi bi-wallet-fill me-1"></i>
+                Nouveau Compte
+              </a>
+              <a routerLink="/clients" class="btn btn-info btn-sm">
+                <i class="bi bi-people me-1"></i>
+                Voir Clients
+              </a>
+              <a routerLink="/comptes" class="btn btn-secondary btn-sm">
+                <i class="bi bi-list-ul me-1"></i>
+                Voir Comptes
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

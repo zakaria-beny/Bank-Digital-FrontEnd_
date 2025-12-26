@@ -1,0 +1,66 @@
+<div class="container mt-4">
+  <div class="card col-md-6 offset-md-3">
+    <div class="card-header bg-dark text-white">
+      <h5>Nouveau Compte Bancaire</h5>
+    </div>
+    <div class="card-body">
+
+      <form [formGroup]="noveauCompteFormGroup" (ngSubmit)="handleSaveCompte()">
+
+        <div class="mb-3">
+          <label class="form-label">Client :</label>
+          <select class="form-select" formControlName="clientId">
+            <option [ngValue]="null">-- Sélectionner un client --</option>
+            <option *ngFor="let c of listClients" [value]="c.id">
+              {{ c.nom }} ({{ c.email }})
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label d-block">Type de Compte :</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="COURANT" formControlName="type">
+            <label class="form-check-label">Compte Courant</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="EPARGNE" formControlName="type">
+            <label class="form-check-label">Compte Épargne</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Devise :</label>
+            <select class="form-select" formControlName="devise">
+              <option value="MAD">MAD</option>
+              <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Solde Initial :</label>
+            <input type="number" class="form-control" formControlName="solde">
+          </div>
+        </div>
+
+        <div class="mb-3" *ngIf="noveauCompteFormGroup.value.type === 'COURANT'">
+          <label class="form-label text-primary">Découvert Autorisé :</label>
+          <input type="number" class="form-control" formControlName="decouvert">
+        </div>
+
+        <div class="mb-3" *ngIf="noveauCompteFormGroup.value.type === 'EPARGNE'">
+          <label class="form-label text-success">Taux d'Intérêt (%) :</label>
+          <input type="number" class="form-control" formControlName="tauxInteret">
+        </div>
+
+        <div class="d-grid">
+          <button class="btn btn-success" [disabled]="noveauCompteFormGroup.invalid">
+            <i class="bi bi-save"></i> Enregistrer
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

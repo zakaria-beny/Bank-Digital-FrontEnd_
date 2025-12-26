@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <div class="card col-md-8 offset-2">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="bi bi-person-circle me-2"></i>
+        Détails du Client
+      </h5>
+      <button class="btn btn-sm btn-outline-secondary" (click)="handleBack()">
+        <i class="bi bi-arrow-left me-1"></i>
+        Retour
+      </button>
+    </div>
+
+    <div class="card-body" *ngIf="!loading && client">
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="d-flex align-items-center mb-3">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                 style="width: 80px; height: 80px; font-size: 2rem;">
+              {{client.nom?.charAt(0).toUpperCase()}}
+            </div>
+            <div class="ms-3">
+              <h3 class="mb-1">{{client.nom}}</h3>
+              <p class="text-muted mb-0">
+                <i class="bi bi-envelope me-1"></i>
+                {{client.email}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="text-muted small">ID Client</label>
+          <p class="fw-bold">{{client.id}}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="text-muted small">Nom Complet</label>
+          <p class="fw-bold">{{client.nom}}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="text-muted small">Adresse Email</label>
+          <p class="fw-bold">{{client.email}}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="text-muted small">Statut</label>
+          <p>
+            <span class="badge bg-success">Actif</span>
+          </p>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="d-flex gap-2 mt-4">
+        <button class="btn btn-info" (click)="handleViewComptes()">
+          <i class="bi bi-wallet2 me-1"></i>
+          Voir les comptes
+        </button>
+        <button class="btn btn-warning" (click)="handleEditClient()">
+          <i class="bi bi-pencil-square me-1"></i>
+          Modifier
+        </button>
+        <button class="btn btn-danger" (click)="handleDeleteClient()">
+          <i class="bi bi-trash me-1"></i>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body text-center" *ngIf="loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+      <p class="mt-2 text-muted">Chargement des détails...</p>
+    </div>
+  </div>
+</div>

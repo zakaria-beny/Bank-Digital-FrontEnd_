@@ -1,0 +1,76 @@
+<div class="container mt-4">
+  <div class="card col-md-6 offset-3">
+    <div class="card-header">
+      <i class="bi bi-pencil-square me-2"></i> Modifier Compte
+    </div>
+    <div class="card-body">
+      <form [formGroup]="editCompteFormGroup" (ngSubmit)="handleUpdateCompte()">
+
+        <div class="mb-3">
+          <label class="form-label">ID Compte</label>
+          <input type="text" formControlName="id" class="form-control bg-light" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Numéro de Compte</label>
+          <input type="text" formControlName="numeroCompte" class="form-control bg-light" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Type de Compte</label>
+          <select formControlName="type" class="form-select">
+            <option value="COURANT">Compte Courant</option>
+            <option value="EPARGNE">Compte Épargne</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Statut</label>
+          <select formControlName="statut" class="form-select">
+            <option value="CREATED">CREATED</option>
+            <option value="ACTIVATED">ACTIVATED</option>
+            <option value="SUSPENDED">SUSPENDED</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Devise</label>
+          <select formControlName="devise" class="form-select">
+            <option value="MAD">MAD</option>
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+
+        <div class="mb-3" *ngIf="currentAccountType === 'COURANT'">
+          <label class="form-label">Découvert Autorisé</label>
+          <input type="number" formControlName="decouvert" class="form-control">
+        </div>
+
+        <div class="mb-3" *ngIf="currentAccountType === 'EPARGNE'">
+          <label class="form-label">Taux d'intérêt (%)</label>
+          <input type="number" formControlName="tauxInteret" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Solde</label>
+          <input type="number" formControlName="solde" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Date de Création</label>
+          <input type="date" formControlName="dateCreation" class="form-control">
+        </div>
+
+        <div class="d-flex gap-2">
+          <button [disabled]="editCompteFormGroup.invalid" class="btn btn-success" type="submit">
+            Mettre à jour
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="handleCancel()">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
