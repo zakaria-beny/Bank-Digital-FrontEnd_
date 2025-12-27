@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DashboardService } from '../services/dashboardservice';
@@ -14,18 +14,8 @@ import { ChartConfiguration, ChartData } from 'chart.js';
 })
 export class Dashboard implements OnInit {
 
-  stats: {
-    totalClients: number;
-    totalComptes: number;
-    totalBalance: number;
-    totalOperations: number;
-    compteCourantCount: number;
-    compteEpargneCount: number;
-    activeAccounts: number;
-    suspendedAccounts: number;
-  } | null = null;
-
-  loading = true;
+  stats: any = null;
+  loading: boolean = false; // Default to false to prevent initial freeze
 
   public pieChartData: ChartData<'pie', number[], string> = {
     labels: [],
@@ -36,46 +26,27 @@ export class Dashboard implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: true,
-        position: 'right',
-        labels: {
-          font: {
-            size: 14
-          },
-          padding: 20
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            const label: string = context.label ?? '';
-            const value: number = Number(context.parsed ?? 0);
-            const data: number[] = context.dataset.data as number[];
-            const total: number = data.reduce(
-              (sum: number, current: number) => sum + (Number(current) || 0),
-              0
-            );
-            const percentage: string =
-              total > 0 ? ((value / total) * 100).toFixed(1) : '0';
-            return `${label}: ${value} (${percentage}%)`;
-          }
-        }
-      }
+      legend: { display: true, position: 'right' }
     }
   };
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private cd: ChangeDetectorRef // 👈 Inject it here
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardStats();
   }
 
   loadDashboardStats(): void {
-    this.loading = true;
+    this.loading = true; // Turn on spinner
 
     this.dashboardService.getStats().subscribe({
-      next: (data) => {
+      next: (data: any) => {
+        console.log("1. Data received:", data); // Debug log
+
+        // Map the data
         const courantCount = Number(data?.compteCourantCount || 0);
         const epargneCount = Number(data?.compteEpargneCount || 0);
 
@@ -86,17 +57,21 @@ export class Dashboard implements OnInit {
           totalOperations: Number(data?.totalOperations || 0),
           compteCourantCount: courantCount,
           compteEpargneCount: epargneCount,
-          activeAccounts: courantCount + epargneCount,
-          suspendedAccounts: 0
+          activeAccounts: Number(data?.activeAccounts || 0),
+          suspendedAccounts: Number(data?.suspendedAccounts || 0)
         };
 
         this.initializeChart();
+
+        // 👇 CRITICAL: Stop loading and Force Update
         this.loading = false;
+        this.cd.detectChanges(); // Forces the HTML to refresh
+        console.log("2. Loading set to false, UI should update");
       },
       error: (err) => {
-        console.error('Dashboard Error:', err);
+        console.error('Error:', err);
         this.loading = false;
-        alert('Erreur lors du chargement des statistiques');
+        this.cd.detectChanges(); // Force update even on error
       }
     });
   }
@@ -108,10 +83,7 @@ export class Dashboard implements OnInit {
       labels: ['Comptes Courants', 'Comptes Épargne'],
       datasets: [
         {
-          data: [
-            this.stats.compteCourantCount,
-            this.stats.compteEpargneCount
-          ],
+          data: [this.stats.compteCourantCount, this.stats.compteEpargneCount],
           backgroundColor: ['#0d6efd', '#198754'],
           hoverBackgroundColor: ['#0b5ed7', '#157347'],
           borderWidth: 2,

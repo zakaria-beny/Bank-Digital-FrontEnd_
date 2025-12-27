@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClientsSerivces } from '../services/clients-serivces';
@@ -18,7 +18,8 @@ export class ClientDetails implements OnInit {
   constructor(
     private clientservice: ClientsSerivces,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED
   ) {}
 
   ngOnInit(): void {
@@ -27,13 +28,16 @@ export class ClientDetails implements OnInit {
   }
 
   private loadClientDetails(): void {
+    this.loading = true;
     this.clientservice.getclientbyid(this.clientId).subscribe({
       next: (data) => {
         this.client = data;
         this.loading = false;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE (Fixes spinner)
       },
       error: (err) => {
         console.error(err);
+        this.loading = false;
         alert("Erreur lors du chargement des détails du client");
         this.router.navigate(['/clients']);
       }

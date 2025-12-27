@@ -1,0 +1,18 @@
+.card {
+  border: none;
+  overflow: hidden; /* Ensures header corners follow card radius */
+}
+
+.list-group-item {
+  border-left: none;
+  border-right: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40vh;
+}

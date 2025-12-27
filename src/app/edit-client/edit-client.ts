@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ClientsSerivces } from '../services/clients-serivces';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,7 +19,8 @@ export class EditClient implements OnInit {
     private fb: FormBuilder,
     private clientservice: ClientsSerivces,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED
   ) {}
 
   ngOnInit(): void {
@@ -36,6 +37,7 @@ export class EditClient implements OnInit {
           nom: data.nom,
           email: data.email
         });
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
       error: (err) => {
         console.error(err);
@@ -57,10 +59,12 @@ export class EditClient implements OnInit {
       next: () => {
         alert("Client mis à jour avec succès");
         this.router.navigate(['/client-details', this.clientId]);
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
       error: (err) => {
         console.error(err);
         alert("Erreur lors de la mise à jour");
+        this.cd.detectChanges();
       }
     });
   }

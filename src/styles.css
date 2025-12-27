@@ -1,1 +1,176 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================================
+   GLOBAL VARIABLES & THEME
+   ========================================= */
+:root {
+  --primary-color: #0d6efd;
+  --secondary-color: #6c757d;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --dark-bg: #212529;
+  --light-bg: #f8f9fa;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================
+   TYPOGRAPHY
+   ========================================= */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f7f6; /* Soft grey background for dashboard feeling */
+  color: #333;
+  padding-bottom: 50px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* =========================================
+   CARD STYLING (The core of the dashboard)
+   ========================================= */
+.card {
+  border: none; /* Remove default ugly border */
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.card:hover {
+  box-shadow: var(--hover-shadow); /* Lift effect on hover */
+}
+
+.card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #eee;
+  padding: 1.2rem;
+  border-radius: 12px 12px 0 0 !important;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+
+/* =========================================
+   BUTTONS (Modern & Pill shaped)
+   ========================================= */
+.btn {
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+  border: none;
+  box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+  border: none;
+  box-shadow: 0 4px 6px rgba(25, 135, 84, 0.2);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+  border: none;
+  box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+}
+
+.btn:hover {
+  transform: translateY(-2px); /* Slight jump effect */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* =========================================
+   FORMS (Inputs & Selects)
+   ========================================= */
+.form-control, .form-select {
+  border-radius: 8px;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  background-color: #fcfcfc;
+}
+
+.form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15); /* Soft Blue Glow */
+  border-color: #0d6efd;
+  background-color: #fff;
+}
+
+.input-group-text {
+  border-radius: 8px 0 0 8px;
+  background-color: #f1f3f5;
+  border: 1px solid #ddd;
+}
+
+/* =========================================
+   TABLES (Clean & Spacious)
+   ========================================= */
+.table {
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+  letter-spacing: 1px;
+}
+
+.table tbody td {
+  padding: 1rem 0.75rem;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f4f9;
+}
+
+/* =========================================
+   BADGES (Status indicators)
+   ========================================= */
+.badge {
+  padding: 0.5em 0.8em;
+  border-radius: 6px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.bg-success {
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important; /* Dark green text on light green bg */
+}
+
+.bg-danger {
+  background-color: #f8d7da !important;
+  color: #842029 !important; /* Dark red text on light red bg */
+}
+
+.bg-info {
+  background-color: #cff4fc !important;
+  color: #055160 !important;
+}
+
+/* =========================================
+   LOADING SPINNER CENTERED
+   ========================================= */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}

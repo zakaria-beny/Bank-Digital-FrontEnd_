@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ComptesServices } from '../services/comptes-serivces';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,10 +20,10 @@ export class EditCompte implements OnInit {
     private fb: FormBuilder,
     private comptesservice: ComptesServices,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED
   ) {}
 
-  // Getter to simplify HTML checks
   get currentAccountType(): string {
     return this.editCompteFormGroup?.get('type')?.value || '';
   }
@@ -47,18 +47,16 @@ export class EditCompte implements OnInit {
       tauxInteret: [0]
     });
 
-    // Listen for manual changes in the dropdown
     this.editCompteFormGroup.get('type')?.valueChanges.subscribe(value => {
       this.applyConditionalValidators(value);
     });
   }
 
   private loadCompte(): void {
+    this.loading = true;
     this.comptesservice.getcomptebyid(this.compteId).subscribe({
       next: (data: any) => {
         const dateOnly = data.dateCreation ? data.dateCreation.split('T')[0] : '';
-
-        // Use uppercase to ensure match with <option value="COURANT">
         const backendType = data.type ? data.type.toUpperCase() : '';
 
         this.editCompteFormGroup.patchValue({
@@ -75,8 +73,12 @@ export class EditCompte implements OnInit {
 
         this.applyConditionalValidators(backendType);
         this.loading = false;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
-      error: () => this.router.navigate(['/comptes'])
+      error: () => {
+        this.loading = false;
+        this.router.navigate(['/comptes']);
+      }
     });
   }
 
@@ -103,8 +105,12 @@ export class EditCompte implements OnInit {
       next: () => {
         alert("Mis à jour avec succès !");
         this.router.navigate(['/compte-details', this.compteId]);
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
-      error: (err) => alert("Erreur: " + err.message)
+      error: (err) => {
+        alert("Erreur: " + err.message);
+        this.cd.detectChanges();
+      }
     });
   }
 

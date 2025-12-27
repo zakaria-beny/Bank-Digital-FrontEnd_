@@ -1,91 +1,101 @@
 <div class="container mt-4">
-  <div class="card col-md-8 offset-2">
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="!loading && compte">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">
-        <i class="bi bi-wallet2 me-2"></i>
-        Détails du Compte
+        <i class="bi bi-wallet2 me-2"></i>Détails du Compte #{{ compte.id }}
       </h5>
-      <button class="btn btn-sm btn-outline-secondary" (click)="handleBack()">
-        <i class="bi bi-arrow-left me-1"></i> Retour
+      <button class="btn btn-outline-secondary btn-sm" (click)="handleBack()">
+        <i class="bi bi-arrow-left"></i> Retour
       </button>
     </div>
 
-    <div class="card-body" *ngIf="!loading && compte">
-      <div class="row mb-4">
-        <div class="col-md-12">
-          <div class="d-flex align-items-center mb-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 [ngClass]="compte.type === 'COURANT' ? 'bg-primary' : 'bg-success'"
-                 style="width: 80px; height: 80px;">
-              <i class="bi bi-wallet2 text-white" style="font-size: 2rem;"></i>
-            </div>
-            <div class="ms-3">
-              <h3 class="mb-1">{{compte.numeroCompte}}</h3>
-              <p class="text-muted mb-0">
-                <span class="badge me-2" [ngClass]="compte.type === 'COURANT' ? 'bg-primary' : 'bg-success'">
-                  {{compte.type}}
-                </span>
-                <span class="badge"
-                      [ngClass]="{
-                        'bg-info': compte.statut === 'CREATED',
-                        'bg-success': compte.statut === 'ACTIVATED',
-                        'bg-danger': compte.statut === 'SUSPENDED'
-                      }">
-                  {{compte.statut}}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <hr>
-
+    <div class="card-body">
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="text-muted small">Solde</label>
-          <p class="fw-bold fs-4 text-success">
-            {{compte.solde | number:'1.2-2'}} {{compte.devise}}
-          </p>
-        </div>
-
-        <div class="col-md-6 mb-3 d-flex align-items-center">
-          <div class="btn-group" role="group">
-
-            <button *ngIf="compte.statut === 'CREATED' || compte.statut === 'SUSPENDED'"
-                    class="btn btn-outline-success btn-sm"
-                    (click)="handleChangeStatus('ACTIVATED')">
-              <i class="bi bi-check-circle"></i> Activer
-            </button>
-
-            <button *ngIf="compte.statut === 'ACTIVATED'"
-                    class="btn btn-outline-warning btn-sm"
-                    (click)="handleChangeStatus('SUSPENDED')">
-              <i class="bi bi-pause-circle"></i> Suspendre
-            </button>
-
-          </div>
+          <h6 class="text-muted text-uppercase mb-3">Informations Financières</h6>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Solde :</span>
+              <span class="fw-bold fs-5 text-primary">{{ compte.solde | number:'1.2-2' }} {{ compte.devise }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Statut :</span>
+              <span class="badge"
+                    [ngClass]="{
+                  'bg-success': compte.statut === 'ACTIVATED',
+                  'bg-danger': compte.statut === 'SUSPENDED',
+                  'bg-warning text-dark': compte.statut === 'CREATED'
+                }">
+                {{ compte.statut }}
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Type :</span>
+              <span class="fw-bold">{{ compte.type }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Date Création :</span>
+              <span>{{ compte.dateCreation | date:'mediumDate' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between" *ngIf="compte.decouvert">
+              <span>Découvert Autorisé :</span>
+              <span class="text-danger fw-bold">{{ compte.decouvert | number:'1.2-2' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between" *ngIf="compte.tauxInteret">
+              <span>Taux d'intérêt :</span>
+              <span class="text-success fw-bold">{{ compte.tauxInteret }} %</span>
+            </li>
+          </ul>
         </div>
 
         <div class="col-md-6 mb-3">
-          <label class="text-muted small">Date Création</label>
-          <p>{{compte.dateCreation | date:'dd/MM/yyyy'}}</p>
+          <h6 class="text-muted text-uppercase mb-3">Informations Client</h6>
+          <div class="p-3 bg-light rounded border">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <i class="bi bi-person-fill fs-5"></i>
+              </div>
+              <div>
+                <p class="mb-0 fw-bold">{{ compte.client?.nom }}</p>
+                <small class="text-muted">{{ compte.client?.email }}</small>
+              </div>
+            </div>
+            <p class="mb-1"><i class="bi bi-person-vcard me-2 text-muted"></i>ID Client: <strong>{{ compte.client?.id }}</strong></p>
+          </div>
         </div>
       </div>
 
-      <hr>
+      <hr class="my-4">
 
-      <div class="d-flex gap-2 mt-4">
-        <button class="btn btn-primary" (click)="handleOperations()">
-          <i class="bi bi-arrow-left-right me-1"></i> Opérations
+      <div class="d-flex flex-wrap gap-2 justify-content-end">
+
+        <button class="btn btn-info text-white" (click)="handleOperations()">
+          <i class="bi bi-list-ul"></i> Opérations
         </button>
-        <button class="btn btn-warning" (click)="handleEditCompte()">
-          <i class="bi bi-pencil-square me-1"></i> Modifier
+
+        <button *ngIf="compte.statut === 'ACTIVATED'" class="btn btn-warning text-dark" (click)="handleChangeStatus('SUSPENDED')">
+          <i class="bi bi-pause-circle"></i> Suspendre
         </button>
+        <button *ngIf="compte.statut !== 'ACTIVATED'" class="btn btn-success" (click)="handleChangeStatus('ACTIVATED')">
+          <i class="bi bi-play-circle"></i> Activer
+        </button>
+
+        <button class="btn btn-primary" (click)="handleEditCompte()">
+          <i class="bi bi-pencil-square"></i> Modifier
+        </button>
+
         <button class="btn btn-danger" (click)="handleDeleteCompte()">
-          <i class="bi bi-trash me-1"></i> Supprimer
+          <i class="bi bi-trash"></i> Supprimer
         </button>
       </div>
+
     </div>
   </div>
 </div>

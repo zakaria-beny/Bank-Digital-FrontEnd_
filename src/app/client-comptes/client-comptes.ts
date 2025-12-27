@@ -1,68 +1,82 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClientsSerivces } from '../services/clients-serivces';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-client-comptes',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './client-comptes.html',
-  styleUrl: './client-comptes.css'
+  styleUrls: ['./client-comptes.css']
 })
 export class ClientComptes implements OnInit {
   client: any;
   comptes: any[] = [];
   clientId!: number;
-  loading: boolean = true;
+  loading: boolean = false;
+  errorMessage: string | null = null;
 
   constructor(
     private clientservice: ClientsSerivces,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.clientId = this.route.snapshot.params['id'];
-    this.loadClientAndComptes();
+    this.loadData();
   }
 
-  private loadClientAndComptes(): void {
+  private loadData(): void {
+    this.loading = true;
+    this.errorMessage = null;
+
+    // 1. Get Client First
     this.clientservice.getclientbyid(this.clientId).subscribe({
-      next: (clientData: any) => {
+      next: (clientData) => {
         this.client = clientData;
-        this.loadComptes();
+
+        // 2. Then Get Accounts
+        this.clientservice.getcomptesbyClient(this.clientId)
+          .pipe(
+            finalize(() => {
+              this.loading = false;
+              this.cd.detectChanges();
+            })
+          )
+          .subscribe({
+            next: (accountsData: any) => {
+              this.comptes = accountsData;
+            },
+            error: (err) => {
+              console.error("Error loading accounts:", err);
+              this.errorMessage = "Erreur de chargement des comptes (Vérifiez la console)";
+            }
+          });
       },
-      error: (err: any) => {
-        console.error(err);
-        alert("Erreur lors du chargement du client");
-        this.router.navigate(['/clients']);
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = "Client introuvable";
+        console.error("Error loading client:", err);
       }
     });
   }
 
-  private loadComptes(): void {
-    this.clientservice.getcomptesbyClient(this.clientId).subscribe({
-      next: (data: any) => {
-        this.comptes = data;
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.loading = false;
-      }
-    });
-  }
-
+  // 👇 ADDED BACK: Needed by HTML
   protected handleViewCompteDetails(compte: any): void {
     this.router.navigate(['/compte-details', compte.id]);
   }
 
-  protected handleBack(): void {
-    this.router.navigate(['/client-details', this.clientId]);
+  // 👇 ADDED BACK: Needed by HTML
+  protected calculateTotalBalance(): number {
+    if (!this.comptes) return 0;
+    return this.comptes.reduce((total, c) => total + (c.solde || 0), 0);
   }
 
-  protected calculateTotalBalance(): number {
-    return this.comptes.reduce((total, compte) => total + compte.solde, 0);
+  protected handleBack(): void {
+    this.router.navigate(['/clients']);
   }
 }

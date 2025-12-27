@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ComptesServices } from '../services/comptes-serivces';
@@ -15,7 +15,12 @@ export class CompteDetails implements OnInit {
   compteId!: number;
   loading: boolean = true;
 
-  constructor(private comptesservice: ComptesServices, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private comptesservice: ComptesServices,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED
+  ) {}
 
   ngOnInit(): void {
     this.compteId = +this.route.snapshot.params['id'];
@@ -23,21 +28,39 @@ export class CompteDetails implements OnInit {
   }
 
   private loadData(): void {
+    this.loading = true;
     this.comptesservice.getcomptebyid(this.compteId).subscribe({
       next: (data: any) => {
         this.compte = data;
         this.loading = false;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE (Fixes spinner)
       },
-      error: () => this.router.navigate(['/comptes'])
+      error: () => {
+        this.loading = false;
+        this.router.navigate(['/comptes']);
+      }
     });
   }
 
   protected handleChangeStatus(newStatus: string): void {
     if (!confirm(`Passer au statut ${newStatus} ?`)) return;
+
+    // Optimistic update (optional, but makes it feel faster)
+    const oldStatus = this.compte.statut;
+    this.compte.statut = newStatus;
+
     const updated = { ...this.compte, statut: newStatus };
+
     this.comptesservice.updatecompte(this.compteId, updated).subscribe({
-      next: (data) => this.compte = data,
-      error: () => alert("Erreur de mise à jour")
+      next: (data) => {
+        this.compte = data;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE (Refreshes status badge immediately)
+      },
+      error: () => {
+        this.compte.statut = oldStatus; // Revert on error
+        alert("Erreur de mise à jour");
+        this.cd.detectChanges();
+      }
     });
   }
 

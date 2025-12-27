@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { ComptesServices } from '../services/comptes-serivces'; // Check spelling
-import { ClientsSerivces } from '../services/clients-serivces'; // Check spelling
+import { ComptesServices } from '../services/comptes-serivces';
+import { ClientsSerivces } from '../services/clients-serivces';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -14,33 +14,38 @@ import { CommonModule } from '@angular/common';
 })
 export class NouveauCompte implements OnInit {
   noveauCompteFormGroup!: FormGroup;
-  listClients: any[] = []; // Store the clients here
+  listClients: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private compteService: ComptesServices,
     private clientService: ClientsSerivces,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED
   ) {}
 
   ngOnInit(): void {
 
     this.noveauCompteFormGroup = this.fb.group({
-      type: ['COURANT', Validators.required], // Default to COURANT (matches Backend)
-      clientId: [null, Validators.required],  // Must select a client
+      type: ['COURANT', Validators.required],
+      clientId: [null, Validators.required],
       solde: [0, [Validators.required, Validators.min(0)]],
       devise: ['MAD', Validators.required],
       decouvert: [0],
       tauxInteret: [0]
     });
 
-    // 2. Load Clients (Required by Specification)
+    // Load Clients
     this.clientService.getclients().subscribe({
       next: (data: any) => {
         this.listClients = data;
         console.log("Clients loaded:", data);
+        this.cd.detectChanges(); // 👈 FORCE UPDATE (Fixes dropdown)
       },
-      error: (err) => console.error("Error loading clients:", err)
+      error: (err) => {
+        console.error("Error loading clients:", err);
+        this.cd.detectChanges();
+      }
     });
   }
 
@@ -67,10 +72,12 @@ export class NouveauCompte implements OnInit {
       next: (resp) => {
         alert("Compte créé avec succès!");
         this.router.navigate(['/comptes']);
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
       error: (err) => {
         console.error(err);
         alert("Erreur lors de la création: " + (err.error?.message || "Erreur serveur"));
+        this.cd.detectChanges();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Import
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,7 +24,8 @@ export class Operations implements OnInit {
     private fb: FormBuilder,
     private comptesService: ComptesServices,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED
   ) {}
 
   ngOnInit(): void {
@@ -50,8 +51,10 @@ export class Operations implements OnInit {
       next: (data) => {
         this.compte = data;
         this.loading = false;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
       error: () => {
+        this.loading = false;
         alert("Erreur lors du chargement du compte");
         this.router.navigate(['/comptes']);
       }
@@ -62,6 +65,7 @@ export class Operations implements OnInit {
     this.comptesService.getoperations(this.compteId).subscribe({
       next: (data) => {
         this.operations = data;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
       error: (err) => console.error(err)
     });
@@ -81,8 +85,12 @@ export class Operations implements OnInit {
         this.operationForm.reset({ type: 'CREDIT', montant: 0, description: '' });
         this.loadCompteDetails();
         this.loadOperations();
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
-      error: (err) => alert("Erreur: " + (err.error?.message || err.message))
+      error: (err) => {
+        alert("Erreur: " + (err.error?.message || err.message));
+        this.cd.detectChanges();
+      }
     });
   }
 
@@ -101,8 +109,12 @@ export class Operations implements OnInit {
         this.transferForm.reset();
         this.loadCompteDetails();
         this.loadOperations();
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
-      error: (err) => alert("Erreur: " + (err.error?.message || err.message))
+      error: (err) => {
+        alert("Erreur: " + (err.error?.message || err.message));
+        this.cd.detectChanges();
+      }
     });
   }
 

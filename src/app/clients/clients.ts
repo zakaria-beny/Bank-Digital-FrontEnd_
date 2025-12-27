@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ClientsSerivces } from '../services/clients-serivces';
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,11 +16,13 @@ export class Clients implements OnInit {
 
   clients: any;
   searchformGroup!: FormGroup;
+  loading: boolean = false;
 
   constructor(
     private clientservice: ClientsSerivces,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 INJECTED HERE
   ) {}
 
   ngOnInit(): void {
@@ -33,12 +34,18 @@ export class Clients implements OnInit {
 
   protected handleSearchClients() {
     let kw = this.searchformGroup?.value.motcle;
+    this.loading = true; // Start spinner
+
     this.clientservice.searchclients(kw).subscribe({
       next: (data) => {
         this.clients = data;
+        this.loading = false;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       },
       error: (err) => {
         console.error(err);
+        this.loading = false;
+        this.cd.detectChanges(); // 👈 FORCE UPDATE
       }
     });
   }
