@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 // 👇 IMPORTING 'Clients' and 'Comptes' (No Component suffix)
-import { Clients } from './clients/clients';
+import { Clients} from './clients/clients';
 import { Comptes } from './comptes/comptes';
 
 import { NoveauClient } from './noveau-client/noveau-client';

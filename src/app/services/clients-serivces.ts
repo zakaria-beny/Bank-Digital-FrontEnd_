@@ -25,9 +25,10 @@ export class ClientsSerivces {
     return this.http.get(`${this.host}/clients`, this.getHeaders());
   }
 
-  public searchclients(motcle: String) {
-    return this.http.get(`${this.host}/clients/search?motcle=${motcle}`, this.getHeaders());
+  public searchclients(motcle: string, page: number = 0, size: number = 10) {
+    return this.http.get(`http://localhost:8080/clients/search?motcle=${motcle}&page=${page}&size=${size}`);
   }
+
 
   public ajouterclients(client: any) {
     return this.http.post(`${this.host}/clients`, client, this.getHeaders());

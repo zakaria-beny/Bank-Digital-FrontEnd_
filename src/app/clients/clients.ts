@@ -40,12 +40,12 @@ export class Clients implements OnInit {
       next: (data) => {
         this.clients = data;
         this.loading = false;
-        this.cd.detectChanges(); // 👈 FORCE UPDATE
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.loading = false;
-        this.cd.detectChanges(); // 👈 FORCE UPDATE
+        this.cd.detectChanges();
       }
     });
   }
