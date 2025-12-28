@@ -51,7 +51,10 @@ export class ClientComptes implements OnInit {
           )
           .subscribe({
             next: (accountsData: any) => {
-              this.comptes = accountsData;
+              console.log('Accounts API response:', accountsData);
+              // Handle different response structures
+              this.comptes = accountsData?.content || accountsData || [];
+              console.log('Parsed accounts:', this.comptes);
             },
             error: (err) => {
               console.error("Error loading accounts:", err);
@@ -84,14 +87,14 @@ export class ClientComptes implements OnInit {
 
   protected searchClient(): void {
     if (!this.searchTerm || this.searchTerm.trim() === '') {
-      this.errorMessage = 'Veuillez entrer un ID ou un nom de client';
+      this.errorMessage = 'Veuillez entrer un ID de client';
       return;
     }
 
     this.loading = true;
     this.errorMessage = null;
 
-    // Try to find by ID first, then by name
+    // Search only by ID
     this.clientservice.getclientbyid(this.searchTerm.trim()).subscribe({
       next: (client) => {
         this.client = client;
@@ -99,24 +102,8 @@ export class ClientComptes implements OnInit {
         this.loadClientComptes();
       },
       error: () => {
-        // If not found by ID, search by name
-        this.clientservice.searchclients(this.searchTerm.trim(), 0, 10).subscribe({
-          next: (response: any) => {
-            if (response.content && response.content.length > 0) {
-              const firstClient = response.content[0];
-              this.client = firstClient;
-              this.clientId = firstClient.id;
-              this.loadClientComptes();
-            } else {
-              this.errorMessage = 'Aucun client trouvé avec cet ID ou ce nom';
-              this.loading = false;
-            }
-          },
-          error: () => {
-            this.errorMessage = 'Erreur lors de la recherche du client';
-            this.loading = false;
-          }
-        });
+        this.errorMessage = 'Client introuvable avec cet ID';
+        this.loading = false;
       }
     });
   }

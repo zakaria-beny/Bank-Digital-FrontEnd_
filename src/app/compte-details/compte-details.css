@@ -1,13 +1,48 @@
+/* Modern Account Details Page Styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
 .card {
   border: none;
-  overflow: hidden; /* Ensures header corners follow card radius */
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: white;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1.5rem 2rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-body {
+  padding: 2rem;
 }
 
 .list-group-item {
   border-left: none;
   border-right: none;
-  padding-left: 0;
-  padding-right: 0;
+  border-top: 1px solid #f1f3f4;
+  border-bottom: none;
+  padding: 1rem 1.5rem;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  background: #f8f9fa;
+  transform: translateX(5px);
 }
 
 .loading-container {
@@ -15,4 +50,6 @@
   justify-content: center;
   align-items: center;
   min-height: 40vh;
+  flex-direction: column;
+  gap: 1rem;
 }

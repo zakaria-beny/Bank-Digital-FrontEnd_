@@ -78,6 +78,7 @@
           <tr>
             <th>Date</th>
             <th>Type</th>
+            <th>Description</th>
             <th class="text-end">Montant</th>
           </tr>
           </thead>
@@ -89,6 +90,7 @@
                   {{op.type}}
                 </span>
             </td>
+            <td>{{op.description || '-'}}</td>
             <td class="text-end fw-bold"
                 [ngClass]="op.type === 'CREDIT' ? 'text-success' : 'text-danger'">
               {{op.type === 'CREDIT' ? '+' : '-'}}{{op.montant | number:'1.2-2'}}
@@ -103,57 +105,143 @@
 
       <div *ngIf="activeTab === 'operation'">
         <h5 class="mb-3">Nouvelle opération</h5>
+        
+        <!-- Error and Success Messages -->
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{errorMessage}}
+          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+        
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{successMessage}}
+          <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+        </div>
+        
         <div *ngIf="compte?.statut === 'SUSPENDED'" class="alert alert-warning">
           <i class="bi bi-exclamation-triangle me-2"></i>
           Les opérations sont désactivées pour les comptes suspendus.
         </div>
+        
         <form [formGroup]="operationForm" (ngSubmit)="handleOperation()">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">Type d'opération</label>
-              <select formControlName="type" class="form-select" [disabled]="compte?.statut === 'SUSPENDED'">
+              <select formControlName="type" class="form-select" [disabled]="compte?.statut === 'SUSPENDED' || loading">
                 <option value="CREDIT">Crédit (Dépôt)</option>
                 <option value="DEBIT">Débit (Retrait)</option>
               </select>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">Montant</label>
-              <input type="number" formControlName="montant" class="form-control" step="0.01" 
-                     [disabled]="compte?.statut === 'SUSPENDED'">
+              <div class="input-group">
+                <span class="input-group-text">{{compte?.devise || '€'}}</span>
+                <input type="number" formControlName="montant" class="form-control" step="0.01" 
+                       [disabled]="compte?.statut === 'SUSPENDED' || loading"
+                       placeholder="0.00">
+              </div>
+              <small class="form-text text-muted" *ngIf="operationForm.value.type === 'DEBIT'">
+                Solde disponible: <strong>{{compte?.solde | number:'1.2-2'}} {{compte?.devise}}</strong>
+              </small>
             </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Description (optionnel)</label>
             <input type="text" formControlName="description" class="form-control" 
-                   [disabled]="compte?.statut === 'SUSPENDED'">
+                   [disabled]="compte?.statut === 'SUSPENDED' || loading"
+                   placeholder="Description de l'opération...">
           </div>
-          <button [disabled]="operationForm.invalid || compte?.statut === 'SUSPENDED'" 
+          
+          <div class="mb-3" *ngIf="operationForm.value.type === 'DEBIT' && operationForm.value.montant > compte?.solde">
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              <strong>Attention:</strong> Montant supérieur au solde disponible!
+            </div>
+          </div>
+          
+          <button [disabled]="operationForm.invalid || compte?.statut === 'SUSPENDED' || loading || 
+                   (operationForm.value.type === 'DEBIT' && operationForm.value.montant > compte?.solde)" 
                   class="btn btn-primary" type="submit">
-            <i class="bi bi-check-circle me-1"></i>Exécuter
+            <i class="bi bi-check-circle me-1"></i>
+            <span *ngIf="!loading">Exécuter</span>
+            <span *ngIf="loading">
+              <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              Traitement...
+            </span>
           </button>
         </form>
       </div>
 
       <div *ngIf="activeTab === 'transfer'">
         <h5 class="mb-3">Virement</h5>
+        
+        <!-- Error and Success Messages -->
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{errorMessage}}
+          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+        
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{successMessage}}
+          <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+        </div>
+        
         <div *ngIf="compte?.statut === 'SUSPENDED'" class="alert alert-warning">
           <i class="bi bi-exclamation-triangle me-2"></i>
           Les virements sont désactivés pour les comptes suspendus.
         </div>
+        
         <form [formGroup]="transferForm" (ngSubmit)="handleTransfer()">
           <div class="mb-3">
-            <label class="form-label">Compte de destination (ID)</label>
-            <input type="text" formControlName="compteDestination" class="form-control" 
-                   [disabled]="compte?.statut === 'SUSPENDED'">
+            <label class="form-label">Compte de destination</label>
+            <select formControlName="compteDestination" class="form-select" 
+                    [disabled]="compte?.statut === 'SUSPENDED' || loading">
+              <option value="">Sélectionner un compte...</option>
+              <ng-container *ngFor="let client of clients">
+                <!-- Skip if this is the current account holder -->
+                <ng-container *ngIf="client.id !== compte?.clientdto?.id">
+                  <ng-container *ngFor="let account of client.comptes || []">
+                    <option [value]="account.id">
+                      {{client.nom}} {{client.prenom}} - {{account.numeroCompte}} ({{account.type}})
+                    </option>
+                  </ng-container>
+                  <!-- Show if client has no accounts -->
+                  <option *ngIf="!client.comptes || client.comptes.length === 0" disabled>
+                    {{client.nom}} {{client.prenom}} - Aucun compte
+                  </option>
+                </ng-container>
+              </ng-container>
+            </select>
+            <small class="form-text text-muted">
+              Sélectionnez le compte destinataire du virement
+            </small>
           </div>
+          
           <div class="mb-3">
             <label class="form-label">Montant</label>
-            <input type="number" formControlName="montant" class="form-control" step="0.01" 
-                   [disabled]="compte?.statut === 'SUSPENDED'">
+            <div class="input-group">
+              <span class="input-group-text">{{compte?.devise || '€'}}</span>
+              <input type="number" formControlName="montant" class="form-control" step="0.01" 
+                     [disabled]="compte?.statut === 'SUSPENDED' || loading"
+                     placeholder="0.00">
+            </div>
+            <small class="form-text text-muted">
+              Solde disponible: <strong>{{compte?.solde | number:'1.2-2'}} {{compte?.devise}}</strong>
+            </small>
           </div>
-          <button [disabled]="transferForm.invalid || compte?.statut === 'SUSPENDED'" 
+          
+          <button [disabled]="transferForm.invalid || compte?.statut === 'SUSPENDED' || loading || 
+                   transferForm.value.montant > compte?.solde" 
                   class="btn btn-success" type="submit">
-            <i class="bi bi-arrow-right-circle me-1"></i>Transférer
+            <i class="bi bi-arrow-right-circle me-1"></i>
+            <span *ngIf="!loading">Transférer</span>
+            <span *ngIf="loading">
+              <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              Traitement...
+            </span>
           </button>
         </form>
       </div>
