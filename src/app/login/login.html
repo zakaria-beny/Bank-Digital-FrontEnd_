@@ -1,42 +1,134 @@
-<div class="container">
-  <div class="login-box">
-    <h3 class="title" style="font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 600; letter-spacing: -0.02em;">Login</h3>
+<div class="auth-container">
+  <!-- Animated Background -->
+  <div class="bg-gradient">
+    <div class="bg-animation">
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+      </div>
+      <div class="grid-pattern"></div>
+    </div>
+  </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-      <div class="form-group">
-        <label>Username</label>
-        <input
-          type="text"
-          formControlName="username"
-          class="form-control"
-          [class.error-border]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+  <!-- Main Content -->
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <!-- Left Panel - Branding -->
+      <div class="brand-panel">
+        <div class="brand-content">
+          <div class="brand-logo">
+            <div class="logo-animation">
+              <i class="bi bi-bank2"></i>
+            </div>
+          </div>
+          <h2 class="brand-title">Bank Digital</h2>
+          <p class="brand-subtitle">Gestion bancaire moderne et sécurisée</p>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          type="password"
-          formControlName="password"
-          class="form-control"
-          [class.error-border]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+      <!-- Right Panel - Login Form -->
+      <div class="form-panel">
+        <div class="form-header">
+          <h1 class="form-title">Bienvenue</h1>
+          <p class="form-subtitle">Connectez-vous pour accéder à votre espace</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          
+          <div class="form-field">
+            <div class="field-wrapper">
+              <div class="field-icon">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <input
+                type="text"
+                formControlName="username"
+                class="field-input"
+                placeholder="Nom d'utilisateur"
+                [class.error-field]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+              <div class="field-border"></div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <div class="field-wrapper">
+              <div class="field-icon">
+                <i class="bi bi-lock-fill"></i>
+              </div>
+              <input
+                type="password"
+                formControlName="password"
+                class="field-input"
+                placeholder="Mot de passe"
+                [class.error-field]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <div class="field-border"></div>
+            </div>
+          </div>
+
+          <div *ngIf="errorMessage" class="error-alert">
+            <div class="error-icon">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="error-content">
+              <span class="error-title">Erreur de connexion</span>
+              <span class="error-message">{{ errorMessage }}</span>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="loginForm.invalid || loading">
+            <div class="btn-content">
+              <span *ngIf="!loading" class="btn-text">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Se connecter
+              </span>
+              <span *ngIf="loading" class="btn-loading">
+                <div class="loading-spinner"></div>
+                Connexion en cours...
+              </span>
+            </div>
+            <div class="btn-ripple"></div>
+          </button>
+        </form>
+
+        <!-- Demo Credentials -->
+        <div class="demo-panel">
+          <div class="demo-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>Accès démonstration</span>
+          </div>
+          <div class="demo-content">
+            <div class="demo-credentials">
+              <div class="credential-item">
+                <div class="credential-label">
+                  <i class="bi bi-person"></i>
+                  Utilisateur
+                </div>
+                <div class="credential-value">
+                  <code>admin</code>
+                  <button class="copy-btn" onclick="navigator.clipboard.writeText('admin')">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="credential-item">
+                <div class="credential-label">
+                  <i class="bi bi-key"></i>
+                  Mot de passe
+                </div>
+                <div class="credential-value">
+                  <code>123</code>
+                  <button class="copy-btn" onclick="navigator.clipboard.writeText('123')">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div *ngIf="errorMessage" class="alert-error">
-        {{ errorMessage }}
-      </div>
-
-      <button type="submit" [disabled]="loginForm.invalid || loading">
-        <span *ngIf="!loading">Login</span>
-        <span *ngIf="loading" class="loader"></span>
-      </button>
-
-    </form>
-
-    <div class="credentials-info">
-
-      <p>Username: admin</p>
-      <p>Password: 123</p>
     </div>
   </div>
 </div>
