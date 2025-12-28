@@ -59,7 +59,7 @@
         <table class="table table-bordered table-striped">
           <thead>
           <tr>
-            <th>Numéro de Compte</th>
+            <th>Numéro</th>
             <th>Type</th>
             <th>Solde</th>
             <th>Date de Création</th>
@@ -68,7 +68,7 @@
           </thead>
           <tbody>
           <tr *ngFor="let compte of comptes">
-            <td>{{compte.numeroCompte}}</td>
+            <td class="fw-bold text-primary">{{compte.numeroCompte}}</td>
             <td>
               <span class="badge"
                     [ngClass]="compte.type === 'COURANT' ? 'bg-primary' : 'bg-success'">

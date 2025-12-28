@@ -33,7 +33,7 @@
           <thead class="table-light">
           <tr>
             <th>ID</th>
-            <th>Numéro</th>
+
             <th>Client</th>
             <th>Type</th>
             <th class="text-end">Solde</th>
@@ -44,7 +44,7 @@
           <tbody>
           <tr *ngFor="let c of comptes">
             <td>{{ c.id }}</td>
-            <td class="text-muted small">{{ c.numeroCompte }}</td>
+
 
             <td class="fw-bold text-primary">
               {{ c.clientdto?.nom || c.client?.nom || 'Inconnu' }}
