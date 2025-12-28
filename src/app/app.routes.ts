@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-// 👇 IMPORTING 'Clients' and 'Comptes' (No Component suffix)
 import { Clients} from './clients/clients';
 import { Comptes } from './comptes/comptes';
 
@@ -20,7 +19,6 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'dashboard', component: Dashboard, canActivate: [AuthGuard] },
 
-  // 👇 USING 'Clients' and 'Comptes'
   { path: 'clients', component: Clients, canActivate: [AuthGuard] },
   { path: 'comptes', component: Comptes, canActivate: [AuthGuard] },
 

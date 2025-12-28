@@ -12,7 +12,7 @@ import { ComptesServices } from '../services/comptes-serivces';
 })
 export class CompteDetails implements OnInit {
   compte: any = null;
-  compteId!: number;
+  compteId!: string;
   loading: boolean = true;
 
   constructor(
@@ -23,7 +23,7 @@ export class CompteDetails implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.compteId = +this.route.snapshot.params['id'];
+    this.compteId = this.route.snapshot.params['id'];
     this.loadData();
   }
 

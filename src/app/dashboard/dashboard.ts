@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Im
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DashboardService } from '../services/dashboardservice';
+import { AuthService } from '../services/auth-serivce';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
@@ -16,6 +17,7 @@ export class Dashboard implements OnInit {
 
   stats: any = null;
   loading: boolean = false; // Default to false to prevent initial freeze
+  errorMessage: string | null = null;
 
   public pieChartData: ChartData<'pie', number[], string> = {
     labels: [],
@@ -32,6 +34,7 @@ export class Dashboard implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
+    private authService: AuthService,
     private cd: ChangeDetectorRef // 👈 Inject it here
   ) {}
 
@@ -39,11 +42,18 @@ export class Dashboard implements OnInit {
     this.loadDashboardStats();
   }
 
+  logout(): void {
+    this.authService.logout();
+  }
+
   loadDashboardStats(): void {
     this.loading = true; // Turn on spinner
+    this.errorMessage = null;
+    const start = performance.now();
 
     this.dashboardService.getStats().subscribe({
       next: (data: any) => {
+        console.log(`[dashboard] /dashboard/stats OK in ${Math.round(performance.now() - start)}ms`);
         console.log("1. Data received:", data); // Debug log
 
         // Map the data
@@ -69,7 +79,17 @@ export class Dashboard implements OnInit {
         console.log("2. Loading set to false, UI should update");
       },
       error: (err) => {
+        console.log(`[dashboard] /dashboard/stats ERROR in ${Math.round(performance.now() - start)}ms`);
         console.error('Error:', err);
+        if (err?.status === 0) {
+          this.errorMessage = "Impossible de contacter le serveur (CORS ou serveur arrêté).";
+        } else {
+          const backendMsg = err?.error?.message || err?.error || null;
+          const status = err?.status ? ` (HTTP ${err.status})` : '';
+          this.errorMessage = backendMsg
+            ? `Erreur lors du chargement${status}: ${backendMsg}`
+            : `Erreur lors du chargement${status}.`;
+        }
         this.loading = false;
         this.cd.detectChanges(); // Force update even on error
       }

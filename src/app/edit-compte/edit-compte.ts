@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EditCompte implements OnInit {
   editCompteFormGroup!: FormGroup;
-  compteId!: number;
+  compteId!: string;
   loading: boolean = true;
 
   constructor(
@@ -21,15 +21,22 @@ export class EditCompte implements OnInit {
     private comptesservice: ComptesServices,
     private route: ActivatedRoute,
     private router: Router,
-    private cd: ChangeDetectorRef // 👈 INJECTED
+    private cd: ChangeDetectorRef 
   ) {}
 
   get currentAccountType(): string {
     return this.editCompteFormGroup?.get('type')?.value || '';
   }
 
+  private normalizeType(value: string | null | undefined): string {
+    const v = (value || '').toUpperCase();
+    if (v.includes('COURANT')) return 'COURANT';
+    if (v.includes('EPARGNE') || v.includes('EPARGNE')) return 'EPARGNE';
+    return v;
+  }
+
   ngOnInit(): void {
-    this.compteId = +this.route.snapshot.params['id'];
+    this.compteId = this.route.snapshot.params['id'];
     this.initForm();
     this.loadCompte();
   }
@@ -57,7 +64,7 @@ export class EditCompte implements OnInit {
     this.comptesservice.getcomptebyid(this.compteId).subscribe({
       next: (data: any) => {
         const dateOnly = data.dateCreation ? data.dateCreation.split('T')[0] : '';
-        const backendType = data.type ? data.type.toUpperCase() : '';
+        const backendType = this.normalizeType(data.type);
 
         this.editCompteFormGroup.patchValue({
           id: data.id,
@@ -89,9 +96,11 @@ export class EditCompte implements OnInit {
     if (type === 'COURANT') {
       dec?.setValidators([Validators.required, Validators.min(0)]);
       taux?.clearValidators();
+      taux?.setValue(0, { emitEvent: false });
     } else if (type === 'EPARGNE') {
       taux?.setValidators([Validators.required, Validators.min(0)]);
       dec?.clearValidators();
+      dec?.setValue(0, { emitEvent: false });
     }
 
     dec?.updateValueAndValidity();
@@ -100,7 +109,20 @@ export class EditCompte implements OnInit {
 
   handleUpdateCompte(): void {
     if (this.editCompteFormGroup.invalid) return;
-    const payload = this.editCompteFormGroup.getRawValue();
+
+    const raw = this.editCompteFormGroup.getRawValue();
+    const type: string = this.normalizeType(raw.type);
+
+    const payload: any = {
+      type,
+      statut: raw.statut,
+      devise: raw.devise,
+      solde: raw.solde,
+      dateCreation: raw.dateCreation,
+      decouvert: type === 'COURANT' ? raw.decouvert : 0,
+      tauxInteret: type === 'EPARGNE' ? raw.tauxInteret : 0
+    };
+
     this.comptesservice.updatecompte(this.compteId, payload).subscribe({
       next: () => {
         alert("Mis à jour avec succès !");

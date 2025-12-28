@@ -12,7 +12,7 @@ import { ClientsSerivces } from '../services/clients-serivces';
 })
 export class ClientDetails implements OnInit {
   client: any;
-  clientId!: number;
+  clientId!: string;
   loading: boolean = true;
 
   constructor(

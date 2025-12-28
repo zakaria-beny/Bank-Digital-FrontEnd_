@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EditClient implements OnInit {
   editClientFormGroup!: FormGroup;
-  clientId!: number;
+  clientId!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -24,7 +24,7 @@ export class EditClient implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.clientId = +this.route.snapshot.params['id'];
+    this.clientId = this.route.snapshot.params['id'];
 
     this.editClientFormGroup = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(4)]],

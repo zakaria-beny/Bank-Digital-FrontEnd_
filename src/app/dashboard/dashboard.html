@@ -6,6 +6,11 @@
     </h2>
   </div>
 
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    <i class="bi bi-exclamation-octagon me-2"></i>
+    {{ errorMessage }}
+  </div>
+
   <div *ngIf="loading" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Chargement...</span>
@@ -171,5 +176,9 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div *ngIf="!loading && !stats && !errorMessage" class="alert alert-warning">
+    Aucune donnée disponible.
   </div>
 </div>

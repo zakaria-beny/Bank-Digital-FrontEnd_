@@ -5,7 +5,7 @@
     </div>
     <div class="card-body">
       <div *ngIf="searchformGroup">
-        <form [formGroup]="searchformGroup" (ngSubmit)="handleSearchClients()">
+        <form [formGroup]="searchformGroup" (ngSubmit)="handleSearchClients(0)">
           <div class="input-group mb-2">
             <label class="me-2">Keyword :</label>
             <input type="text" formControlName="motcle" class="form-control">
@@ -17,14 +17,14 @@
         </form>
       </div>
 
-      <div *ngIf="!clients" class="text-center my-4">
+      <div *ngIf="loading" class="text-center my-4">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
         <p class="mt-2">Chargement des clients...</p>
       </div>
 
-      <div *ngIf="clients && clients.length > 0">
+      <div *ngIf="!loading && clients.length > 0">
         <table class="table table-bordered table-striped">
           <thead>
           <tr>
@@ -40,9 +40,9 @@
             <td>{{c.nom}}</td>
             <td>{{c.email}}</td>
             <td>
-              <button class="btn btn-info btn-sm me-2" (click)="handleViewDetails(c)">
-                <i class="bi bi-eye me-1"></i>
-                Détails
+              <button class="btn btn-info btn-sm me-2" (click)="handleViewComptes(c)">
+                <i class="bi bi-wallet2 me-1"></i>
+                Comptes
               </button>
               <button class="btn btn-warning btn-sm me-2" (click)="handleEditClient(c)">
                 <i class="bi bi-pencil-square me-1"></i>
@@ -56,9 +56,35 @@
           </tr>
           </tbody>
         </table>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-muted">
+            Page {{ page + 1 }} / {{ totalPages }} ({{ totalElements }} clients)
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm" style="width: auto"
+                    [value]="size"
+                    (change)="handlePageSizeChange(+$any($event.target).value)">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="20">20</option>
+              <option [value]="50">50</option>
+            </select>
+
+            <div class="btn-group" role="group">
+              <button class="btn btn-outline-secondary btn-sm" (click)="handlePageChange(page - 1)" [disabled]="page <= 0">
+                Prev
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="handlePageChange(page + 1)" [disabled]="totalPages === 0 || page >= totalPages - 1">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div *ngIf="clients && clients.length === 0" class="alert alert-info text-center">
+      <div *ngIf="!loading && clients.length === 0" class="alert alert-info text-center">
         <i class="bi bi-info-circle me-2"></i>
         Aucun client trouvé
       </div>

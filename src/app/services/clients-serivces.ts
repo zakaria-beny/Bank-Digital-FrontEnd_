@@ -26,7 +26,10 @@ export class ClientsSerivces {
   }
 
   public searchclients(motcle: string, page: number = 0, size: number = 10) {
-    return this.http.get(`http://localhost:8080/clients/search?motcle=${motcle}&page=${page}&size=${size}`);
+    return this.http.get(
+      `${this.host}/clients/search?motcle=${motcle}&page=${page}&size=${size}`,
+      this.getHeaders()
+    );
   }
 
 
@@ -34,20 +37,20 @@ export class ClientsSerivces {
     return this.http.post(`${this.host}/clients`, client, this.getHeaders());
   }
 
-  public getclientbyid(id: number): Observable<any> {
+  public getclientbyid(id: string): Observable<any> {
     return this.http.get(`${this.host}/clients/${id}`, this.getHeaders());
   }
 
-  public updateclient(id: number, client: any): Observable<any> {
+  public updateclient(id: string, client: any): Observable<any> {
     return this.http.put(`${this.host}/clients/${id}`, client, this.getHeaders());
   }
 
-  public deleteclient(id: number): Observable<any> {
+  public deleteclient(id: string): Observable<any> {
     return this.http.delete(`${this.host}/clients/${id}`, this.getHeaders());
   }
 
 
-  public getcomptesbyClient(clientId: number): Observable<any> {
+  public getcomptesbyClient(clientId: string): Observable<any> {
     return this.http.get(`${this.host}/clients/${clientId}/comptes`, this.getHeaders());
   }
 }

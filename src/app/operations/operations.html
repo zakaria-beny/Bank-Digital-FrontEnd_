@@ -3,14 +3,27 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">
         <i class="bi bi-arrow-left-right me-2"></i>
-        Opérations - Compte {{compte?.numeroCompte}}
+        Opérations - Client {{compte?.clientdto?.nom}} (ID: {{compte?.clientdto?.id}})
       </h5>
-      <button class="btn btn-sm btn-outline-secondary" (click)="handleBack()">
-        <i class="bi bi-arrow-left me-1"></i>Retour
-      </button>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="handleBack()">
+          <i class="bi bi-arrow-left me-1"></i>Retour
+        </button>
+      </div>
     </div>
 
     <div class="card-body" *ngIf="!loading">
+      <div *ngIf="compte?.statut === 'SUSPENDED'" class="alert alert-danger mb-4">
+        <h5 class="alert-heading">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          Compte Suspendu
+        </h5>
+        <p class="mb-0">
+          <strong>Les opérations ne sont pas autorisées sur un compte suspendu.</strong><br>
+          Veuillez contacter l'administrateur pour réactiver ce compte.
+        </p>
+      </div>
+
       <div class="alert alert-info mb-4">
         <div class="row">
           <div class="col-md-4">
@@ -24,7 +37,15 @@
             </span>
           </div>
           <div class="col-md-4">
-            <strong>Client:</strong> {{compte?.clientdto?.nom}}
+            <strong>Statut:</strong>
+            <span class="badge" 
+                  [ngClass]="{
+                    'bg-success': compte?.statut === 'ACTIVATED',
+                    'bg-danger': compte?.statut === 'SUSPENDED',
+                    'bg-warning text-dark': compte?.statut === 'CREATED'
+                  }">
+              {{compte?.statut}}
+            </span>
           </div>
         </div>
       </div>
@@ -82,25 +103,32 @@
 
       <div *ngIf="activeTab === 'operation'">
         <h5 class="mb-3">Nouvelle opération</h5>
+        <div *ngIf="compte?.statut === 'SUSPENDED'" class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Les opérations sont désactivées pour les comptes suspendus.
+        </div>
         <form [formGroup]="operationForm" (ngSubmit)="handleOperation()">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">Type d'opération</label>
-              <select formControlName="type" class="form-select">
+              <select formControlName="type" class="form-select" [disabled]="compte?.statut === 'SUSPENDED'">
                 <option value="CREDIT">Crédit (Dépôt)</option>
                 <option value="DEBIT">Débit (Retrait)</option>
               </select>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">Montant</label>
-              <input type="number" formControlName="montant" class="form-control" step="0.01">
+              <input type="number" formControlName="montant" class="form-control" step="0.01" 
+                     [disabled]="compte?.statut === 'SUSPENDED'">
             </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Description (optionnel)</label>
-            <input type="text" formControlName="description" class="form-control">
+            <input type="text" formControlName="description" class="form-control" 
+                   [disabled]="compte?.statut === 'SUSPENDED'">
           </div>
-          <button [disabled]="operationForm.invalid" class="btn btn-primary" type="submit">
+          <button [disabled]="operationForm.invalid || compte?.statut === 'SUSPENDED'" 
+                  class="btn btn-primary" type="submit">
             <i class="bi bi-check-circle me-1"></i>Exécuter
           </button>
         </form>
@@ -108,16 +136,23 @@
 
       <div *ngIf="activeTab === 'transfer'">
         <h5 class="mb-3">Virement</h5>
+        <div *ngIf="compte?.statut === 'SUSPENDED'" class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Les virements sont désactivés pour les comptes suspendus.
+        </div>
         <form [formGroup]="transferForm" (ngSubmit)="handleTransfer()">
           <div class="mb-3">
             <label class="form-label">Compte de destination (ID)</label>
-            <input type="number" formControlName="compteDestination" class="form-control">
+            <input type="text" formControlName="compteDestination" class="form-control" 
+                   [disabled]="compte?.statut === 'SUSPENDED'">
           </div>
           <div class="mb-3">
             <label class="form-label">Montant</label>
-            <input type="number" formControlName="montant" class="form-control" step="0.01">
+            <input type="number" formControlName="montant" class="form-control" step="0.01" 
+                   [disabled]="compte?.statut === 'SUSPENDED'">
           </div>
-          <button [disabled]="transferForm.invalid" class="btn btn-success" type="submit">
+          <button [disabled]="transferForm.invalid || compte?.statut === 'SUSPENDED'" 
+                  class="btn btn-success" type="submit">
             <i class="bi bi-arrow-right-circle me-1"></i>Transférer
           </button>
         </form>

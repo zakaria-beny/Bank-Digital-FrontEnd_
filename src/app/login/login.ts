@@ -36,12 +36,19 @@ export class Login implements OnInit {
     this.errorMessage = '';
 
     const { username, password } = this.loginForm.value;
+    const start = performance.now();
 
     this.authService.login(username, password).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        console.log(`[login] /auth/login OK in ${Math.round(performance.now() - start)}ms`);
+        const navStart = performance.now();
+        this.router.navigate(['/dashboard']).finally(() => {
+          console.log(`[login] navigate(/dashboard) finished in ${Math.round(performance.now() - navStart)}ms`);
+          this.loading = false;
+        });
       },
       error: () => {
+        console.log(`[login] /auth/login ERROR in ${Math.round(performance.now() - start)}ms`);
         this.errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect';
         this.loading = false;
       }

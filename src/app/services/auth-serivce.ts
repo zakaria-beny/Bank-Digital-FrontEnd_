@@ -19,13 +19,12 @@ export class AuthService {
           localStorage.setItem('token', response.token);
           localStorage.setItem('username', response.username);
           localStorage.setItem('role', response.role);
+          localStorage.setItem('email', response.email || '');
         }
       })
     );
   }
 
-
-  // Update in AuthService
   register(username: string, password: string, email: string, role: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/register`, {
       username,
@@ -39,6 +38,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
+    localStorage.removeItem('email');
     this.router.navigate(['/login']);
   }
 
@@ -48,6 +48,10 @@ export class AuthService {
 
   getUsername(): string | null {
     return localStorage.getItem('username');
+  }
+
+  getEmail(): string | null {
+    return localStorage.getItem('email');
   }
 
   getRole(): string | null {

@@ -12,7 +12,7 @@ import { ComptesServices } from '../services/comptes-serivces';
   styleUrls: ['./operations.css']
 })
 export class Operations implements OnInit {
-  compteId!: number;
+  compteId!: string;
   compte: any = null;
   operations: any[] = [];
   operationForm!: FormGroup;
@@ -29,7 +29,7 @@ export class Operations implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.compteId = +this.route.snapshot.params['id'];
+    this.compteId = this.route.snapshot.params['id'];
 
     this.operationForm = this.fb.group({
       type: ['CREDIT', Validators.required],
@@ -101,7 +101,7 @@ export class Operations implements OnInit {
 
     this.comptesService.transfer(
       this.compteId,
-      +formData.compteDestination,
+      formData.compteDestination,
       formData.montant
     ).subscribe({
       next: () => {

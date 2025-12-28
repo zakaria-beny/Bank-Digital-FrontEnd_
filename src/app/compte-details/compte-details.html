@@ -76,9 +76,16 @@
 
       <div class="d-flex flex-wrap gap-2 justify-content-end">
 
-        <button class="btn btn-info text-white" (click)="handleOperations()">
+        <button class="btn btn-info text-white" 
+                (click)="handleOperations()"
+                [disabled]="compte.statut === 'SUSPENDED'">
           <i class="bi bi-list-ul"></i> Opérations
         </button>
+
+        <div *ngIf="compte.statut === 'SUSPENDED'" class="alert alert-warning w-100 mb-2">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          <strong>Compte suspendu:</strong> Les opérations (crédit/débit/virement) ne sont pas autorisées sur un compte suspendu.
+        </div>
 
         <button *ngIf="compte.statut === 'ACTIVATED'" class="btn btn-warning text-dark" (click)="handleChangeStatus('SUSPENDED')">
           <i class="bi bi-pause-circle"></i> Suspendre

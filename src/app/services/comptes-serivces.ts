@@ -19,49 +19,55 @@ export class ComptesServices {
     };
   }
 
-  public getcomptes(): Observable<any> {
-    return this.http.get(this.baseUrl, this.getHeaders());
+  public getcomptes(page?: number, size?: number): Observable<any> {
+    const url =
+      page === undefined || size === undefined ? this.baseUrl : `${this.baseUrl}?page=${page}&size=${size}`;
+    return this.http.get(url, this.getHeaders());
   }
 
-  public searchcomptes(motcle: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/search?motcle=${motcle}`, this.getHeaders());
+  public searchcomptes(motcle: string, page?: number, size?: number): Observable<any> {
+    const url =
+      page === undefined || size === undefined
+        ? `${this.baseUrl}/search?motcle=${motcle}`
+        : `${this.baseUrl}/search?motcle=${motcle}&page=${page}&size=${size}`;
+    return this.http.get(url, this.getHeaders());
   }
 
   public ajoutercompte(compte: any): Observable<any> {
     return this.http.post(this.baseUrl, compte, this.getHeaders());
   }
 
-  public getcomptebyid(id: number): Observable<any> {
+  public getcomptebyid(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${id}`, this.getHeaders());
   }
 
-  public updatecompte(id: number, compte: any): Observable<any> {
+  public updatecompte(id: string, compte: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}`, compte, this.getHeaders());
   }
 
-  public deletecompte(id: number): Observable<any> {
+  public deletecompte(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`, this.getHeaders());
   }
 
-  public getoperations(compteId: number): Observable<any> {
+  public getoperations(compteId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${compteId}/operations`, this.getHeaders());
   }
 
-  public credit(compteId: number, montant: number, description: string): Observable<any> {
+  public credit(compteId: string, montant: number, description: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/${compteId}/credit`,
       { montant, description },
       this.getHeaders()
     );
   }
 
-  public debit(compteId: number, montant: number, description: string): Observable<any> {
+  public debit(compteId: string, montant: number, description: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/${compteId}/debit`,
       { montant, description },
       this.getHeaders()
     );
   }
 
-  public transfer(sourceId: number, destId: number, montant: number): Observable<any> {
+  public transfer(sourceId: string, destId: string, montant: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/${sourceId}/transfer`,
       { compteDestination: destId, montant },
       this.getHeaders()
